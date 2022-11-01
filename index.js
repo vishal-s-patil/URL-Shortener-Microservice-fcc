@@ -31,32 +31,33 @@ app.post('/api/shorturl', async (req, res) => {
 	if (!validUrl.isUri(longUrl)) {
 		res.json({ error: 'invalid url' });
 	}
+	else {
+		const baseUrl = 'https://url-shortener-microservice.freecodecamp.rocks/api/shorturl';
+		const urlCode = shortid.generate();
 
-	const baseUrl = 'https://url-shortener-microservice.freecodecamp.rocks/api/shorturl';
-	const urlCode = shortid.generate();
+		try {
+			let url = await Url.findOne({ longUrl });
 
-	try {
-		let url = await Url.findOne({ longUrl });
+			if (url) {
+				res.json({ original_url: longUrl, short_url: url.urlCode });
+			}
+			else {
+				const shortUrl = baseUrl + '/' + urlCode
+				url = new Url({
+					longUrl,
+					shortUrl,
+					urlCode,
+					date: new Date()
+				})
 
-		if (url) {
-			res.json({ original_url: longUrl, short_url: url.urlCode });
+				await url.save();
+				res.json({ original_url: longUrl, short_url: url.urlCode });
+			}
 		}
-		else {
-			const shortUrl = baseUrl + '/' + urlCode
-			url = new Url({
-				longUrl,
-				shortUrl,
-				urlCode,
-				date: new Date()
-			})
-
-			await url.save();
-			res.json({ original_url: longUrl, short_url: url.urlCode });
+		catch (err) {
+			console.log(err);
+			res.json({ error: 'server crashed' });
 		}
-	}
-	catch (err) {
-		console.log(err);
-		res.json({ error: 'server crashed' });
 	}
 })
 
