@@ -31,6 +31,13 @@ app.post('/api/shorturl', async (req, res) => {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
+	const Connection = mongoose.connection;
+	Connection.once('error', () => {
+		console.log('error');
+	});
+	Connection.once('open', () => {
+		console.log('db connected');
+	});
 
 	const longUrl = req.body.url;
 
@@ -72,7 +79,7 @@ app.get('/api/shorturl/:code', async (req, res) => {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
-	const connection = mongoose.connection;
+	const Connection = mongoose.connection;
 	Connection.once('error', () => {
 		console.log('error');
 	});
