@@ -46,6 +46,7 @@ app.post('/api/shorturl', async (req, res) => {
 
 			if (url) {
 				res.json({ original_url: longUrl, short_url: url.urlCode });
+				mongoose.connection.close();
 			}
 			else {
 				const shortUrl = baseUrl + '/' + urlCode
@@ -58,14 +59,15 @@ app.post('/api/shorturl', async (req, res) => {
 
 				await url.save();
 				res.json({ original_url: longUrl, short_url: url.urlCode });
+				mongoose.connection.close();
 			}
 		}
 		catch (err) {
 			console.log(err);
 			res.json({ error: 'server crashed' });
+			mongoose.connection.close();
 		}
 	}
-	mongoose.connection.close();
 })
 
 app.get('/api/shorturl/:code', async (req, res) => {
@@ -78,17 +80,18 @@ app.get('/api/shorturl/:code', async (req, res) => {
 		const url = await Url.findOne({ urlCode: req.params.code });
 		if (url) {
 			res.redirect(url.longUrl);
+			mongoose.connection.close();
 		}
 		else {
 			res.json({ error: 'invalid url' });
+			mongoose.connection.close();
 		}
 	}
 	catch (err) {
+		mongoose.connection.close();
 		console.log(err);
 		res.json({ error: 'server carshed' });
 	}
-
-	mongoose.connection.close();
 })
 
 app.listen(port, function () {
