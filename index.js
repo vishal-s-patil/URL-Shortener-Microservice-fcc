@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const validUrl = require('valid-url')
 const shortid = require('shortid')
-Url = require('./Url');
+Url = require('./Url.js');
 const app = express();
 
 // Basic Configuration

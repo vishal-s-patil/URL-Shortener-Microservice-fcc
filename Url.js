@@ -1,9 +1,4 @@
-const mongoose = require('mongoose');
-console.log(process.env.MONGODB_URI);
-mongoose.connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-});
+const mongoose = require('mongoose')
 
 const URLSchema = new mongoose.Schema({
     urlCode: String,
@@ -15,6 +10,4 @@ const URLSchema = new mongoose.Schema({
     }
 })
 
-let Url = mongoose.model('Url', URLSchema);
-
-exports.Url = Url;
+module.exports = mongoose.model('Url', URLSchema)
