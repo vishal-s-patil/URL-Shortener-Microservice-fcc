@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const validUrl = require('valid-url')
-const shortid = require('shortid')
+const shortid = require('shortid');
+const { default: mongoose } = require('mongoose');
 Url = require('./Url.js');
 const app = express();
 
@@ -26,6 +27,11 @@ app.get('/api/hello', function (req, res) {
 });
 
 app.post('/api/shorturl', async (req, res) => {
+	mongoose.connect(process.env.MONGODB_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+
 	const longUrl = req.body.url;
 
 	if (!validUrl.isUri(longUrl)) {
@@ -59,9 +65,15 @@ app.post('/api/shorturl', async (req, res) => {
 			res.json({ error: 'server crashed' });
 		}
 	}
+	mongoose.connection.close();
 })
 
 app.get('/api/shorturl/:code', async (req, res) => {
+	mongoose.connect(process.env.MONGODB_URI, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+
 	try {
 		const url = await Url.findOne({ urlCode: req.params.code });
 		if (url) {
@@ -75,6 +87,8 @@ app.get('/api/shorturl/:code', async (req, res) => {
 		console.log(err);
 		res.json({ error: 'server carshed' });
 	}
+
+	mongoose.connection.close();
 })
 
 app.listen(port, function () {
