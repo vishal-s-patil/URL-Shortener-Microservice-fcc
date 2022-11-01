@@ -42,7 +42,7 @@ app.post('/api/shorturl', async (req, res) => {
 	const longUrl = req.body.url;
 
 	if (!validUrl.isUri(longUrl)) {
-		res.status(401).json({ error: 'invalid url' });
+		res.json({ error: 'invalid url' });
 	}
 	else {
 		const baseUrl = 'https://url-shortener-microservice.freecodecamp.rocks/api/shorturl';
