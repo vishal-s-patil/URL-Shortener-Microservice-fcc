@@ -4,7 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const validUrl = require('valid-url')
 const shortid = require('shortid');
-const { default: mongoose } = require('mongoose');
+const { default: mongoose, Connection } = require('mongoose');
 Url = require('./Url.js');
 const app = express();
 
@@ -34,8 +34,8 @@ app.post('/api/shorturl', async (req, res) => {
 
 	const longUrl = req.body.url;
 
-	if (!validUrl.isUri(longUrl)) {
-		res.json({ error: 'invalid url' });
+	if (!validUrl.isWebUri(longUrl)) {
+		res.status(401).json({ error: 'invalid url' });
 	}
 	else {
 		const baseUrl = 'https://url-shortener-microservice.freecodecamp.rocks/api/shorturl';
@@ -64,7 +64,7 @@ app.post('/api/shorturl', async (req, res) => {
 		}
 		catch (err) {
 			console.log(err);
-			res.json({ error: 'server crashed' });
+			res.status(500).json({ error: 'server crashed' });
 			mongoose.connection.close();
 		}
 	}
@@ -75,7 +75,13 @@ app.get('/api/shorturl/:code', async (req, res) => {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
-
+	const connection = mongoose.connection;
+	Connection.once('error', () => {
+		console.log('error');
+	});
+	Connection.once('open', () => {
+		console.log('db connected');
+	});
 	try {
 		const url = await Url.findOne({ urlCode: req.params.code });
 		if (url) {
