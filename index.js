@@ -41,7 +41,7 @@ app.post('/api/shorturl', async (req, res) => {
 
 	const longUrl = req.body.url;
 
-	if (!validUrl.isUri(longUrl)) {
+	if (!validUrl.isWebUri(longUrl)) {
 		res.json({ error: 'invalid url' });
 	}
 	else {
