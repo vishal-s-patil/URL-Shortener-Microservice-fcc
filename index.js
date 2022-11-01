@@ -27,10 +27,13 @@ app.get('/api/hello', function (req, res) {
 });
 
 app.post('/api/shorturl', async (req, res) => {
-	mongoose.connect(process.env.MONGODB_URI, {
+	const Connection = mongoose.connect(process.env.MONGODB_URI, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
+
+	Connection.once('open', () => console.log('DB Connected'));
+	Connection.on('error', () => console.log('Error'));
 
 	const longUrl = req.body.url;
 
@@ -71,10 +74,13 @@ app.post('/api/shorturl', async (req, res) => {
 })
 
 app.get('/api/shorturl/:code', async (req, res) => {
-	mongoose.connect(process.env.MONGODB_URI, {
+	const Connection = mongoose.connect(process.env.MONGODB_URI, {
 		useNewUrlParser: true,
 		useUnifiedTopology: true
 	})
+
+	Connection.once('open', () => console.log('DB Connected'));
+	Connection.on('error', () => console.log('Error'));
 
 	try {
 		const url = await Url.findOne({ urlCode: req.params.code });
